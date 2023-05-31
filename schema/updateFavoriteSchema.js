@@ -6,6 +6,4 @@ const updateFavoriteSchema = Joi.object({
     .messages({ "any.required": "missing feild favorite" }),
 });
 
-module.exports = {
-  updateFavoriteSchema,
-};
+module.exports = updateFavoriteSchema;
