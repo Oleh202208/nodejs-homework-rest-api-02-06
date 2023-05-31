@@ -21,7 +21,7 @@ const createNewUser = async (body) => {
   };
 };
 
-const loginCuirrentUser = async (body) => {
+const loginCurrentUser = async (body) => {
   const { email, password } = body;
   const currentUser = await User.findOne({ email });
   if (!currentUser) {
@@ -69,7 +69,7 @@ const changeUserSubscription = async (body, user) => {
 
 module.exports = {
   createNewUser,
-  loginCuirrentUser,
+  loginCurrentUser,
   logoutCurrentUser,
   changeUserSubscription,
 };

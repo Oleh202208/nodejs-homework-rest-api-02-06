@@ -1,7 +1,7 @@
 const ctrWrapper = require("../decorators/ctrWrapper");
 const {
   createNewUser,
-  loginCuirrentUser,
+  loginCurrentUser,
   logoutCurrentUser,
   changeUserSubscription,
 } = require("../services/usersServices");
@@ -12,7 +12,7 @@ const userRegister = async (req, res, next) => {
 };
 
 const userLogin = async (req, res, next) => {
-  const currentUser = await loginCuirrentUser(req.body);
+  const currentUser = await loginCurrentUser(req.body);
   res.status(200).json(currentUser);
 };
 
