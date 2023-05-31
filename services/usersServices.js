@@ -58,13 +58,13 @@ const logoutCurrentUser = async (user) => {
 
 const changeUserSubscription = async (body, user) => {
   const { _id } = user;
-  const changedUserSubscriptio = await User.findByIdAndUpdate(_id, body, {
+  const changedUserSubscription = await User.findByIdAndUpdate(_id, body, {
     new: true,
   });
-  if (!changedUserSubscriptio) {
+  if (!changedUserSubscription) {
     throw new HttpError(404);
   }
-  return changedUserSubscriptio;
+  return changedUserSubscription;
 };
 
 module.exports = {
