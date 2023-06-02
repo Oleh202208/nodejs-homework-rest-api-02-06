@@ -17,6 +17,11 @@ const contactsSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    owen: {
+      type: Schema.Types.ObjectId,
+      ref: "user",
+      required: true,
+    },
   },
   { versionKey: false, timestamps: true }
 );
