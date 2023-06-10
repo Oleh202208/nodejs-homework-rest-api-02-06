@@ -90,7 +90,6 @@ const changeUserAvatar = async (file, user) => {
         console.errror(err);
       });
   });
-  console.log(resized);
 
   const newPath = `${path.join(process.cwd(), "public", "avatars", filename)}`;
   await fs.rename(oldPath, newPath);
