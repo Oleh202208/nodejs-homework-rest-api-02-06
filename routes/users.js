@@ -1,6 +1,7 @@
 const express = require("express");
 const validateSchema = require("../decorators/validateSchema");
 const authenticate = require("../decorators/authenticate");
+const fileUpload = require("../decorators/fileUpload");
 const {
   UserRegistrationSchema,
   UserLoginShema,
@@ -12,6 +13,7 @@ const {
   userLoguot,
   userGetCurrent,
   userUpdateSubscription,
+  userUpdateAvatar,
 } = require("../controllers/usersControlles");
 
 const router = express.Router();
@@ -33,5 +35,9 @@ router
     validateSchema(UserUpdateSubscriptionSchema),
     userUpdateSubscription
   );
+
+router
+  .route("avatar")
+  .patch(authenticate, fileUpload.single("avatar"), userUpdateAvatar);
 
 module.exports = router;
