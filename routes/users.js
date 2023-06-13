@@ -6,6 +6,7 @@ const {
   UserRegistrationSchema,
   UserLoginShema,
   UserUpdateSubscriptionSchema,
+  EmailSchema,
 } = require("../schema/userSchema");
 const {
   userRegister,
@@ -14,6 +15,8 @@ const {
   userGetCurrent,
   userUpdateSubscription,
   userUpdateAvatar,
+  userVerifyEmail,
+  userResendVerifyEmail,
 } = require("../controllers/usersControlles");
 
 const router = express.Router();
@@ -21,6 +24,12 @@ const router = express.Router();
 router
   .route("/register")
   .post(validateSchema(UserRegistrationSchema), userRegister);
+
+router.route("/verify/:vrerificationToken").get(userVerifyEmail);
+
+router
+  .route("/verify")
+  .post(validateSchema(EmailSchema), userResendVerifyEmail);
 
 router.route("/login").post(validateSchema(UserLoginShema), userLogin);
 
