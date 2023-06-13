@@ -1,6 +1,8 @@
 const ctrWrapper = require("../decorators/ctrWrapper");
 const {
   createNewUser,
+  verifyUserEmail,
+  resendVerifyUserEmail,
   loginCurrentUser,
   logoutCurrentUser,
   changeUserSubscription,
@@ -10,6 +12,17 @@ const {
 const userRegister = async (req, res, next) => {
   const newUser = await createNewUser(req.body);
   res.status(201).json(newUser);
+};
+
+const userVerifyEmail = async (req, res, next) => {
+  const { verificationToken } = req.params;
+  await verifyUserEmail(verificationToken);
+  res.status(200).json({ message: "Verefication success" });
+};
+
+const userResendVerifyEmail = async (req, res, next) => {
+  await resendVerifyUserEmail(req.body);
+  res.status(200).json({ message: "Verification email is send" });
 };
 
 const userLogin = async (req, res, next) => {
@@ -42,6 +55,8 @@ const userUpdateAvatar = async (req, res, next) => {
 
 module.exports = {
   userRegister: ctrWrapper(userRegister),
+  userVerifyEmail: ctrWrapper(userVerifyEmail),
+  userResendVerifyEmail: ctrWrapper(userResendVerifyEmail),
   userLogin: ctrWrapper(userLogin),
   userLoguot: ctrWrapper(userLoguot),
   userGetCurrent: ctrWrapper(userGetCurrent),

@@ -2,11 +2,13 @@ const { User } = require("../models/user");
 const { HttpError } = require("../utils/HttpError");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const { SEKRET_KEY } = process.env;
+const { SEKRET_KEY, BASE_URL } = process.env;
 const gravatar = require("gravatar");
 const fs = require("fs/promises");
 const path = require("path");
 const Jimp = require("jimp");
+const crypto = require("crypto");
+const { sendEmail } = require("../utils/sendEmailAPI");
 
 const createNewUser = async (body) => {
   const { email, password } = body;
@@ -19,18 +21,56 @@ const createNewUser = async (body) => {
 
   const defaultAvatar = gravatar.url(email);
 
+  const verificationToken = crypto.randomUUID();
+
   const newUser = await User.create({
     ...body,
     password: hashPassword,
     avatarURL: defaultAvatar,
+    verificationToken,
   });
+  await sendEmail({
+    to: newUser.email,
+    subject: "Email verification",
+    html: `<a target="_blank" href="${BASE_URL}/api/users/verify/${verificationToken}"><strong>Click to verify your email</strong></a>`,
+  });
+
   return {
     user: {
       email: newUser.email,
       avatarURL: newUser.avatarURL,
       subscription: newUser.subscription,
+      verificationToken: newUser.verificationToken,
     },
   };
+};
+
+const verifyUserEmail = async (token) => {
+  const currentUser = await User.findOne({ verificationToken: token });
+  if (currentUser === null) {
+    throw new HttpError(404);
+  }
+  await User.findByIdAndUpdate(currentUser._id, {
+    verify: true,
+    verificationToken: null,
+  });
+};
+
+const resendVerifyUserEmail = async (email) => {
+  const currentUser = await User.findOne({ email });
+
+  if (currentUser === null) {
+    throw new HttpError(404);
+  }
+  if (currentUser.verify || currentUser.verificationToken) {
+    throw new HttpError(400, "Verification has already been passed");
+  }
+
+  await sendEmail({
+    to: currentUser.email,
+    subject: "Email verification",
+    html: `<a target="_blank" href="${BASE_URL}/api/users/verify/${currentUser.verificationToken}"><strong>Click to verify your email</strong></a>`,
+  });
 };
 
 const loginCurrentUser = async (body) => {
@@ -108,6 +148,8 @@ const changeUserAvatar = async (file, user) => {
 
 module.exports = {
   createNewUser,
+  verifyUserEmail,
+  resendVerifyUserEmail,
   loginCurrentUser,
   logoutCurrentUser,
   changeUserSubscription,
